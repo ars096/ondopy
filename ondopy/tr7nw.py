@@ -1,4 +1,4 @@
-#! /bin/pythonOA
+#! /bin/python
 
 import time
 import struct
