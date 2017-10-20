@@ -20,6 +20,17 @@ ACK = b'\x06'
 port = 57172
 
 
+class BadSOHError(Exception):
+    strerror = 'Bad SOH is replied. "serial_number" might be wrong.'
+
+class IncompleteResponceError(Exception):
+    strerror = 'Responce is incomplete. Please try again.'
+    
+    def __init__(self, msg):
+        self.strerror += msg
+        pass
+
+
 def encode_serialnumber(number_hex_string):
     number = int(number_hex_string, 16)
     number_bytes = struct.pack('<I', number)
@@ -102,7 +113,7 @@ def recv(sock):
     soh_ = soh.hex()
     if not verify_soh(soh):
         logger.error('bad soh : {soh_}'.format(**locals()))
-        raise Exception()
+        raise BadSOHError
         return
     drecv += soh
     
@@ -133,8 +144,9 @@ def recv(sock):
     checksum += _recv(sock)
     checksum_ = checksum.hex()
     if not verify_checksum(drecv, checksum):
-        logger.error('bad checksum : {checksum_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad checksum : {checksum_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
         return        
     drecv += checksum
     
@@ -159,13 +171,15 @@ def get_current(host, serial_number, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {
         'data1': struct.unpack('<H', data[:2])[0],
@@ -186,13 +200,15 @@ def get_record_number(host, serial_number, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {
         'record_number': struct.unpack('<H', data[:2])[0],
@@ -212,13 +228,15 @@ def get_machine_code(host, serial_number, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {
         'machine_code': data[:2],
@@ -240,13 +258,15 @@ def get_machine_name(host, serial_number, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {
         'machine_name': data[:7].decode('ascii'),
@@ -266,13 +286,15 @@ def set_unit(host, serial_number, unit_flag, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {}
     return ret
@@ -290,13 +312,15 @@ def set_display(host, serial_number, display_flag, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {}
     return ret
@@ -314,13 +338,15 @@ def get_battery(host, serial_number, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {
         'volt': struct.unpack('<H', data[:2])[0],
@@ -341,13 +367,15 @@ def get_rom_revision(host, serial_number, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {
         'version': struct.unpack('<B', data[:1])[0],
@@ -367,13 +395,15 @@ def get_mac_addr(host, serial_number, timeout=2):
     
     if cmd != command:
         cmd_ = cmd.hex()
-        logger.error('bad command : {cmd_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad command : {cmd_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     if res != ACK:
         res_ = res.hex()
-        logger.error('bad command : {res_}'.format(**locals()))
-        raise Exception()
+        emsg = 'bad resopnse : {res_}'.format(**locals())
+        logger.error(emsg)
+        raise IncompleteResponceError(emsg)
     
     ret = {
         'mac_address': data.hex(),
