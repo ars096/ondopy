@@ -112,8 +112,9 @@ def recv(sock):
     soh = _recv(sock)
     soh_ = soh.hex()
     if not verify_soh(soh):
-        logger.error('bad soh : {soh_}'.format(**locals()))
-        raise BadSOHError
+        emsg = 'bad soh : {soh_}'.format(**locals())
+        logger.error(emsg)
+        raise BadSOHError(emsg)
         return
     drecv += soh
     

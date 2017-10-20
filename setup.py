@@ -5,7 +5,7 @@ requires = []
 
 setuptools.setup(
     name = 'ondopy',
-    version = '0.2',
+    version = '0.2.1',
     description = 'driver for ondotori',
     url = 'https://github.com/ars096/ondopy',
     author = 'Atsushi Nishimura',
